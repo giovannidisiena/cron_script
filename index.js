@@ -13,8 +13,14 @@ const init = async () => {
     ['function allocateSeigniorage() external'],
     account
   );
-  let gasPrice = 10e9; 
-  gasPrice += await provider.getGasPrice();
+  let gasPrice;
+  try {
+    gasPrice = await provider.getGasPrice();
+  } catch (err) {
+    console.log(err);
+    gasPrice = 100e9;
+  }
+  gasPrice += 10e9;
   const tx = await linkswap.allocateSeigniorage(
     { value, gasPrice }
   );
