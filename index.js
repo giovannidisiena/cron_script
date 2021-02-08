@@ -4,7 +4,7 @@ let CronJob = require('cron').CronJob;
 
 const init = async () => {
   const provider = ethers.getDefaultProvider('mainnet', {
-    infura: '' // add infura endpoint here
+    infura: process.env.INFURA_URL
   });
   const signer = new ethers.Wallet(process.env.PRIVATE_KEY);
   const account = signer.connect(provider);
@@ -13,8 +13,10 @@ const init = async () => {
     ['function allocateSeigniorage() external'],
     account
   );
+  let gasPrice = 10e9; 
+  gasPrice += await provider.getGasPrice();
   const tx = await linkswap.allocateSeigniorage(
-    { value, gasPrice: 80e9 }
+    { value, gasPrice }
   );
   console.log('Transaction hash: ${tx.hash}');
 
@@ -22,7 +24,7 @@ const init = async () => {
   console.log('Transaction was mined in block ${receipt.blockNumber}');
 }
 
-const job = new CronJob('0 */24 * * *', function(){
+const job = new CronJob('0 0 * * *', function() {
   init();
 });
 job.start();
