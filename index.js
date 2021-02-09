@@ -4,7 +4,7 @@ let CronJob = require('cron').CronJob;
 
 const init = async () => {
   const provider = ethers.getDefaultProvider('mainnet', {
-    infura: process.env.INFURA_URL
+    infura: process.env.INFURA_ID
   });
   const signer = new ethers.Wallet(process.env.PRIVATE_KEY);
   const account = signer.connect(provider);
@@ -25,20 +25,21 @@ const init = async () => {
   gasPrice.add(ethers.BigNumber.from("10000000000"));
   try {
     oraclePrice = await linkswap.getSeigniorageOraclePrice();
-   } catch (err) {
+  } catch (err) {
      console.log(err);
      console.log('Failed to getSeigniorageOraclePrice... terminating.')
      return;
-   }
-   if (oraclePrice > ethers.BigNumber.from("1000000000000000000")) {
+    }
+  if (oraclePrice > ethers.BigNumber.from("1000000000000000000")) {
+    let gasLimit = ethers.BigNumber.from(process.env.GAS_LIMIT);
     const tx = await linkswap.allocateSeigniorage(
-      { gasPrice: gasPrice }
+      { gasPrice, gasLimit }
     );
     console.log('Transaction hash: ${tx.hash}');
   
     const receipt = await tx.wait();
     console.log('Transaction was mined in block ${receipt.blockNumber}');
-   } else {
+  } else {
     console.log('SeigniorageOraclePrice > 1e18, so allocateSeigniorage not called');
   }
 }
