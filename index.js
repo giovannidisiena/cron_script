@@ -20,9 +20,9 @@ const init = async () => {
     gasPrice = await provider.getGasPrice();
   } catch (err) {
     console.log(err);
-    gasPrice = 100e9;
+    gasPrice = ethers.BigNumber.from("100000000000");
   }
-  gasPrice += 10e9;
+  gasPrice.add(ethers.BigNumber.from("10000000000"));
   try {
     oraclePrice = await linkswap.getSeigniorageOraclePrice();
    } catch (err) {
@@ -30,9 +30,9 @@ const init = async () => {
      console.log('Failed to getSeigniorageOraclePrice... terminating.')
      return;
    }
-   if (oraclePrice > 1e18) {
+   if (oraclePrice > ethers.BigNumber.from("1000000000000000000")) {
     const tx = await linkswap.allocateSeigniorage(
-      { value, gasPrice }
+      { gasPrice: gasPrice }
     );
     console.log('Transaction hash: ${tx.hash}');
   
