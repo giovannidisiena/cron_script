@@ -36,11 +36,11 @@ const init = async () => {
     let gasLimit = ethers.BigNumber.from(process.env.GAS_LIMIT)
     try {
       const tx = await linkswap.allocateSeigniorage({ gasPrice, gasLimit })
-      console.log('Transaction hash: ${tx.hash}')
+      console.log('Transaction hash:', tx.hash)
 
       const receipt = await tx.wait()
 
-      console.log('Transaction was mined in block ${receipt.blockNumber}')
+      console.log('Transaction was mined in block', receipt.blockNumber)
     } catch (err) {
       console.log(err)
     }
@@ -50,8 +50,9 @@ const init = async () => {
     )
   }
 }
-
-const job = new CronJob('0 0 * * *', function () {
+console.log('Script is wating for the Cronjob to execute')
+const job = new CronJob('0 0 * * *', function() {
+  console.log('Cronjob Executed')
   init()
-})
-job.start()
+});
+job.start();
